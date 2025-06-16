@@ -14,5 +14,5 @@ public:
     Rated* clone() const;
 
     Movie* get_movie() const;
-    unsigned Rate() const;
+    unsigned get_rate() const;
 };

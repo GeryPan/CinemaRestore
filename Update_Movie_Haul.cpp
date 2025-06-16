@@ -25,7 +25,7 @@ void execute(std::stringstream& args, User*& user, Cinema& cinema,
     Movie* movie = cinema.find_movie_by_id(movie_id);
     if (movie == nullptr) 
 		throw std::runtime_error("Movie not found.");
-	cinema.updateMovieHaul(movie, new_haul_id);
+	cinema.update_movie_haul(movie, new_haul_id);
 }
 Command* clone()
 {

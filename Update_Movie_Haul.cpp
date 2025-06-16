@@ -6,7 +6,7 @@
 
 const char* Name()
 {
-    return "pdate-movie-haul";
+    return "update-movie-haul";
 }
 bool need_admin()
 {

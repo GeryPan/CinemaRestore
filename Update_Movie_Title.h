@@ -2,7 +2,7 @@
 #include "Command.h" 
 #include "Id_Counter_Manager.h"
 
-class Update_Movie_Haul : public Command
+class Update_Movie_Title : public Command
 {
 public:
 	const char* Name() const override;

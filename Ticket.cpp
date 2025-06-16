@@ -30,7 +30,7 @@ Ticket::Ticket(Movie* new_movie, unsigned new_row, unsigned new_col)
     }
 
 
-    Movie* Ticket::Movie() const
+    Movie* Ticket::get_movie() const
     {
         return movie;
     }

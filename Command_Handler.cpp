@@ -34,7 +34,7 @@ void Command_Handler::copyFrom(const Command_Handler& other)
 Command_Handler::Command_Handler()
 {
     user = nullptr;
-    register_command(new Register_Command());
+    register_command(new Register());
     register_command(new Login());
     register_command(new Buy_Ticket());
     register_command(new List_History());

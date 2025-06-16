@@ -10,5 +10,5 @@ public:
 	bool need_login() const override;
 	void execute(std::stringstream& args, User*& user, Cinema& cinema,
 		Vector<User*>& users, Id_Counter_Manager& id_manager) override;
-	Remove_Movie* clone() const;
+	Command* clone() const;
 };

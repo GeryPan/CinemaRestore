@@ -13,6 +13,6 @@ public:
 
     Rated* clone() const;
 
-    Movie* Movie() const;
+    Movie* get_movie() const;
     unsigned Rate() const;
 };

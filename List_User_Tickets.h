@@ -2,7 +2,7 @@
 #include "Command.h" 
 #include "Id_Counter_Manager.h"
 
-class List_User_History : public Command
+class List_User_Tickets : public Command
 {
 public:
 	const char* Name() const override;

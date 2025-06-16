@@ -72,16 +72,16 @@ namespace File
 		std::ifstream ifs(file_name, std::ios::binary);
 		if (!ifs) return; 
 		PointerVector<IdCounter*> ids;
-		in >> ids;
-		idManager.setSource(ids);
-		PointerVector<Haul*> hauls;
-		PointerVector<Movie*> movies;
+		ifs >> ids;
+		id_manager.setSource(ids);
+		Vector<Haul*> hauls;
+		Vector<Movie*> movies;
 		ifs >> hauls;
 		ifs >> movies;
 		cinema = Cinema(movies, hauls);
-		PointerVector<UserSerializable*> serials;
+		Vector<Serialize_User*> serials;
 		ifs >> serials;
-		users = fromSerializableVector(serials, cinema);
+		users = serialize_vector_from(serials, cinema);
 	}
 }
 

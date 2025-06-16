@@ -8,18 +8,18 @@
 #include <cstring>
 #include <cctype>
 
-namespace User_Input 
+namespace User_Input
 {
     unsigned enter_unsigned(const char* enter, unsigned min = std::numeric_limits<unsigned>::min(), unsigned max = std::numeric_limits<unsigned>::max())
     {
         unsigned value;
-        while (true) 
+        while (true)
         {
             std::cout << enter;
             std::cin >> value;
-            if (!std::cin.fail() && value >= min && value <= max) 
+            if (!std::cin.fail() && value >= min && value <= max)
             {
-                User_Input ::skip_line();
+                User_Input::skip_line();
                 return value;
             }
             std::cout << "Invalid input. ";
@@ -32,11 +32,11 @@ namespace User_Input
     float enter_float(const char* enter, float min = -std::numeric_limits<float>::max(), float max = std::numeric_limits<float>::max())
     {
         float value;
-        while (true) 
+        while (true)
         {
             std::cout << enter;
             std::cin >> value;
-            if (!std::cin.fail() && value >= min && value <= max) 
+            if (!std::cin.fail() && value >= min && value <= max)
             {
                 User_Input::skip_line();
                 return value;
@@ -52,15 +52,15 @@ namespace User_Input
     bool enter_bool(const char* enter)
     {
         std::string input;
-        while (true) 
+        while (true)
         {
             std::cout << enter << " true/false: ";
             std::getline(std::cin, input);
             for (char& c : input)
                 c = std::tolower(c);
-            if (input == "true" || input == "1") 
+            if (input == "true" || input == "1")
                 return true;
-            if (input == "false" || input == "0") 
+            if (input == "false" || input == "0")
                 return false;
             std::cout << "Invalid input.\n";
         }
@@ -70,7 +70,7 @@ namespace User_Input
     const char* enter_text(const char* enter, unsigned max_length)
     {
         static std::string buffer;
-        while (true) 
+        while (true)
         {
             std::cout << enter;
             std::getline(std::cin, buffer);
@@ -79,15 +79,15 @@ namespace User_Input
             if (start != std::string::npos && finish != std::string::npos)
                 buffer = buffer.substr(start, finish - start + 1);
             else
-                buffer.clear(); 
+                buffer.clear();
 
-            if (buffer.empty()) 
+            if (buffer.empty())
             {
                 std::cout << "Input cannot be empty.\n";
                 continue;
             }
 
-            if ((int)buffer.length() >= max_length) 
+            if ((int)buffer.length() >= max_length)
             {
                 std::cout << "Input too long. Maximum length is " << max_length - 1 << " characters.\n";
                 continue;
@@ -95,7 +95,7 @@ namespace User_Input
 
             return buffer.c_str();
         }
-        throw std::invalid_argument("Invalid text input."); 
+        throw std::invalid_argument("Invalid text input.");
     }
 
     const char* enter_date(const char* enter)
@@ -105,7 +105,7 @@ namespace User_Input
             std::cout << enter;
             std::getline(std::cin, buffer);
 
-            if (buffer.length() != 10 || buffer[4] != '-' || buffer[7] != '-') 
+            if (buffer.length() != 10 || buffer[4] != '-' || buffer[7] != '-')
             {
                 std::cout << "Invalid date format. Use YYYY-MM-DD.\n";
                 continue;
@@ -114,16 +114,16 @@ namespace User_Input
             bool valid = true;
             for (unsigned i = 0; i < 10; i++)
             {
-                if (i == 4 || i == 7) 
+                if (i == 4 || i == 7)
                     continue;
-                if (buffer[i] > '9' || buffer[i] < '0') 
+                if (buffer[i] > '9' || buffer[i] < '0')
                 {
                     valid = false;
                     break;
                 }
             }
 
-            if (valid == false) 
+            if (valid == false)
             {
                 std::cout << "Invalid date format. Use YYYY-MM-DD.\n";
                 continue;
@@ -133,7 +133,7 @@ namespace User_Input
             unsigned month = std::stoi(buffer.substr(5, 2));
             unsigned day = std::stoi(buffer.substr(8, 2));
 
-            if (month < 1 || month > 12) 
+            if (month < 1 || month > 12)
             {
                 std::cout << "Invalid month. Use value between 01 and 12.\n";
                 continue;
@@ -157,7 +157,7 @@ namespace User_Input
     const char* enter_time(const char* enter)
     {
         static std::string buffer;
-        while (true) 
+        while (true)
         {
             std::cout << enter;
             std::getline(std::cin, buffer);
@@ -169,7 +169,7 @@ namespace User_Input
     char* get_remaining(std::stringstream& ss, unsigned max_length) {
         std::string str;
         std::getline(ss, str);
-       size_t first_char = str.find_first_not_of(" \t");
+        size_t first_char = str.find_first_not_of(" \t");
         if (first_char != std::string::npos)
             str = str.substr(first_char);
         else
@@ -202,11 +202,11 @@ namespace User_Input
 
     float get_float(std::stringstream& ss, float min = -std::numeric_limits<float>::max(), float max = std::numeric_limits<float>::max())
     {
-        std::string tаке;
-        if (!(ss >> tаке)) throw std::invalid_argument("Missing float argument.");
+        std::string token;
+        if (!(ss >> token)) throw std::invalid_argument("Missing float argument.");
 
         try {
-            float val = std::stof(tаке);
+            float val = std::stof(token);
             if (val >= min && val <= max) return val;
         }
         catch (...) {}
@@ -216,13 +216,13 @@ namespace User_Input
 
     bool get_bool(std::stringstream& ss)
     {
-        std::string tаке;
-        if (!(ss >> tаке)) throw std::invalid_argument("Missing boolean argument.");
+        std::string token;
+        if (!(ss >> token)) throw std::invalid_argument("Missing boolean argument.");
 
-        for (char& c : tаке) c = std::tolower(c);
+        for (char& c : token) c = std::tolower(c);
 
-        if (tаке == "true" || tаке == "1") return true;
-        if (tаке == "false" || tаке == "0") return false;
+        if (token == "true" || token == "1") return true;
+        if (token == "false" || token == "0") return false;
 
         throw std::invalid_argument("Invalid boolean argument.");
     }

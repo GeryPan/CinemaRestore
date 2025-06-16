@@ -37,7 +37,7 @@ void execute(std::stringstream& args, User*& user, Cinema& cinema,
 
     throw std::runtime_error("User not found.");
 }
-Remove_User* clone()
+Command* clone()
 {
     return new Remove_User();
 }

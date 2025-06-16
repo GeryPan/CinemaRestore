@@ -29,5 +29,5 @@ void execute(std::stringstream& args, User*& user, Cinema& cinema,
 }
 Command* clone()
 {
-    return new Update_Movie_Haul()
+    return new Update_Movie_Haul();
 }

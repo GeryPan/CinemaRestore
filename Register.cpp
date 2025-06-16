@@ -36,7 +36,7 @@ void execute(std::stringstream& args, User*& user, Cinema& cinema,
     unsigned next_id = id_manager.generate_next_id("user");
     users.push(new User(next_id, username, password, Constants::USER_REGISTER_START_BALANCE, false));
 }
-Command* Register::clone()
+Command* clone()
 {
-    return new Register()
+    return new Register();
 }

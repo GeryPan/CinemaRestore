@@ -1,35 +1,52 @@
 #include "Rate_Command.h"
 #include "Help_Program.h"
 #include "User_Input.h"
+#include "Id_Counter_Manager.h"
+#include "MyString.h"
+#include "Constants.h"
 #include <cstring>
 #include <stdexcept>
 
-const char* Name()
+const MyString Rate_Command::Name() const
 {
     return "rate-movie";
 }
-bool need_login()
+bool Rate_Command::need_login() const
 {
     return true;
 }
-bool need_admin()
+bool Rate_Command::need_admin() const
 {
     return false;
 }
 
-void execute(std::stringstream& args, User*& user, Cinema& cinema,
+void Rate_Command::execute(std::stringstream& args, User*& user, Cinema& cinema,
     Vector<User*>& users, Id_Counter_Manager& id_manager)
 {
-    unsigned movie_id = User_Input::get_unsigned(args);
-    Movie* movie = cinema.find_movie_by_id(movie_id);
-    if (movie == nullptr) 
-        throw std::runtime_error("Movie doesn't found.");
-    const char* today = Help_Program::current_time();
-    bool has_passed = Help_Program::is_before(movie->Date(), today);
-    delete[] today;
-    for (unsigned i = 0; i < users.Size(); i++) 
+    unsigned rating = User_Input::get_unsigned(args, Constants::MIN_RATING, Constants::MAX_RATING);
+    unsigned movie_id = User_Input::get_unsigned(args, 1, id_manager.peek_current_id("movie"));
+
+    Vector<Movie*>& history = user->Watched_movies();
+    Movie* target = nullptr;
+
+    for (unsigned i = 0; i < history.Size(); i++)
     {
-        users[i]->remove_movie(movie_id, has_passed);
+        if (history[i]->Id() == movie_id) {
+            target = history[i];
+            break;
+        }
     }
-    cinema.remove_movie_by_id(movie_id);
+
+    if (!target)
+        throw std::runtime_error("You have not watched this movie.");
+
+    if (user->has_rated(target))
+        throw std::runtime_error("You have already rated this movie.");
+
+    user->rate_movie(target, rating);
+    std::cout << "Successfully rated \"" << target->Title().c_str() << "\" with " << rating << " stars.\n";
+}
+Command* Rate_Command::clone() const
+{
+    return new Rate_Command();
 }

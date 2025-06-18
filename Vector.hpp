@@ -1,5 +1,7 @@
 #pragma once
 #include <stdexcept>
+#include <cassert>
+
 
 template<typename T>
 class Vector
@@ -7,10 +9,11 @@ class Vector
     T* arr;     // T = Movie* => arr = Movie**
     unsigned size;
     unsigned capacity;
-    bool owns_element;
+    bool owns_elements;
 
     void resize(unsigned new_capacity);
     void copyFrom(const Vector& other);
+    void moveFrom(Vector&& other);
     void free();
     void check_index(unsigned index) const;
 
@@ -19,6 +22,8 @@ public:
     Vector(unsigned new_capacity, bool owns);
     Vector(const Vector& other);
     Vector& operator=(const Vector& other);
+    Vector(Vector&& other);
+    Vector<T>& operator=(Vector&& other);
     void set_ownership(bool own);
     T& operator[](unsigned index);
     const T& operator[](unsigned index) const;
@@ -37,25 +42,39 @@ template<typename T>
 void Vector<T>::resize(unsigned new_capacity)
 {
     capacity = new_capacity;
-    T* copy = new T[capacity];
-    for (size_t i = 0; i < size; i++)
-        copy[i] = data[i];
-    delete[] data;
-    data = copy;
+    T* temp = new T[capacity];
+    for (unsigned i = 0; i < size; i++)
+        temp[i] = arr[i];
+    delete[] arr;
+    arr = temp;
 }
 
 template<typename T>
 void Vector<T>::copyFrom(const Vector& other)
 {
+    assert(other.size <= other.capacity);
     size = other.size;
     capacity = other.capacity;
-    ownsElements = other.owns_elements;
+    owns_elements = other.owns_elements;
     arr = new T[capacity];
     for (size_t i = 0; i < size; i++) {
-        arr[i] = owns_element ? other.RR[i]->clone() : other.arr[i];
+        arr[i] = owns_elements ? other.arr[i]->clone() : other.arr[i];
     }
 }
 
+template<typename T>
+void Vector<T>::moveFrom(Vector&& other)
+{
+    arr = other.arr;
+    size = other.size;
+    capacity = other.capacity;
+    owns_elements = other.owns_elements;
+
+    other.arr = nullptr;
+    other.size = 0;
+    other.capacity = 0;
+    other.owns_elements = false;
+}
 template<typename T>
 void Vector<T>::free()
 {
@@ -64,7 +83,6 @@ void Vector<T>::free()
     {
         delete[] arr;
     }
-    arr = nullptr;
 }
 
 template<typename T>
@@ -77,8 +95,9 @@ void Vector<T>::check_index(unsigned index) const
 template<typename T>
 Vector<T>::Vector()
 {
-    arr = nullptr;
-    size = capacity = 0;
+    arr = new T[capacity];
+        capacity = 8;
+    size = 0;
 }
 
 template<typename T>
@@ -87,7 +106,7 @@ Vector<T>::Vector(unsigned new_capacity, bool owns)
     capacity = new_capacity;
     arr = new T[capacity];
     size = 0;
-    owns_element = owns;
+    owns_elements = owns;
 }
 
 template<typename T>
@@ -103,6 +122,21 @@ Vector<T>& Vector<T>::operator=(const Vector& other)
     {
         free();
         copyFrom(other);
+    }
+    return *this;
+}
+
+template<typename T>
+Vector<T>::Vector(Vector&& other)
+{
+    moveFrom(std::move(*this));
+}
+
+template<typename T>
+Vector<T>& Vector<T>::operator=(Vector&& other) {
+    if (this != &other) {
+        free();
+        moveFrom(std::move(*this));
     }
     return *this;
 }
@@ -131,20 +165,18 @@ template<typename T>
 void Vector<T>::push(T value)
 {
     if (size >= capacity)
-        resize();
+        resize(capacity * 2);
     arr[size++] = value;
 }
 
 template<typename T>
 void Vector<T>::remove_at(unsigned index)
 {
-    check_ndex(index);
-
-    if (owns_elements)
+    check_index(index);
+    if (owns_elements == true)
         delete arr[index];
-
     for (unsigned i = index; i < size - 1; i++)
-        data[i] = data[i + 1];
+        arr[i] = arr[i + 1];
     size--;
 }
 
@@ -157,7 +189,7 @@ unsigned Vector<T>::Size() const
 template<typename T>
 void Vector<T>::clear()
 {
-    if (owns_elements)
+    if (owns_elements == true)
     {
         for (unsigned i = 0; i < size; i++)
             delete arr[i];

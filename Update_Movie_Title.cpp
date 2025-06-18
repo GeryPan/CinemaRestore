@@ -1,33 +1,35 @@
 #include "Update_Movie_Title.h"
 #include "User_Input.h"
+#include "Id_Counter_Manager.h"
+#include "MyString.h"
 #include "Constants.h"
 #include <iostream>
 #include <stdexcept>
 
-const char* Name()
+const MyString Update_Movie_Title::Name() const
 {
-    return "update-movie-title";
+	return "update-movie-title";
 }
-bool need_admin()
+bool Update_Movie_Title::need_admin() const
 {
-    return true;
+	return true;
 }
-bool need_login()
+bool Update_Movie_Title::need_login() const
 {
-    return true;
+	return true;
 }
 
-void execute(std::stringstream& args, User*& user, Cinema& cinema,
-    Vector<User*>& users, Id_Counter_Manager& id_manager)
+void Update_Movie_Title::execute(std::stringstream& args, User*& user, Cinema& cinema,
+	Vector<User*>& users, Id_Counter_Manager& id_manager)
 {
 	unsigned movie_id = User_Input::get_unsigned(args);
-	const char* new_title = User_Input::get_remaining(args, Constants::MAX_MOVIE_TITLE_LENGTH);
+	MyString new_title = User_Input::get_remaining(args, Constants::MAX_MOVIE_NAME_LENGTH);
 	Movie* movie = cinema.find_movie_by_id(movie_id);
-	if (movie == nullptr) 
+	if (movie == nullptr)
 		throw std::runtime_error("Movie not found.");
 	movie->set_title(new_title);
 }
-Command* clone()
+Command* Update_Movie_Title::clone() const
 {
-    return new Update_Movie_Title();
+	return new Update_Movie_Title();
 }

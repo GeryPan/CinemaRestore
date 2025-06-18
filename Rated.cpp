@@ -34,7 +34,7 @@ Movie* Rated::get_movie() const
     return movie;
 }
 
-unsigned Rated::get_rate() const
+unsigned Rated::Rate() const
 {
     return rate;
 }

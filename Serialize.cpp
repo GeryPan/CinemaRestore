@@ -8,26 +8,44 @@
 #include "Serialize_Ticket.h"
 #include "Serialize_Rating.h"
 #include "Serialize_User.h"
+#include "Serialize_Watched_Movies.h"
 #include "Movie_Factory.h"
 #include "Help_Program.h"
+#include "MyString.h"
 #include <iostream>
 #include <cstring>
 
+std::ostream& operator<<(std::ostream& os, const MyString& str)
+{
+	unsigned len = static_cast<unsigned>(str.size);
+	os.write((char*)&len, sizeof(unsigned));
+	os.write(str.data, len);
+	return os;
+}
+
+std::istream& operator>>(std::istream& is, MyString& str)
+{
+	unsigned len;
+	is.read((char*)&len, sizeof(unsigned));
+	if (!is || len < 0) throw std::runtime_error("Invalid string length during read");
+	char* buffer = new char[len + 1];
+	is.read(buffer, len);
+	if (!is) {
+		delete[] buffer;
+		throw std::runtime_error("Failed to read string data");
+	}
+	buffer[len] = '\0';
+	str = MyString(buffer);
+	delete[] buffer;
+	return is;
+}
+
 std::ostream& operator<<(std::ostream& os, const Haul& h)
 {
-	unsigned id = h.Id(),
-		rows = h.Rows(), 
-		cols = h.Cols();
+	int id = h.Id(), rows = h.Rows(), cols = h.Cols();
 	os.write((const char*)&id, sizeof(unsigned));
 	os.write((const char*)&rows, sizeof(unsigned));
 	os.write((const char*)&cols, sizeof(unsigned));
-	for (unsigned i = 0; i < rows; i++)
-	{
-		for (unsigned j = 0; j < cols; j++) {
-			bool taken = !h.is_seat_free(i, j);
-			os.write((const char*)&taken, sizeof(bool));
-		}
-	}
 	return os;
 }
 std::istream& operator>>(std::istream& is, Haul& h)
@@ -37,38 +55,26 @@ std::istream& operator>>(std::istream& is, Haul& h)
 	is.read((char*)&rows, sizeof(unsigned));
 	is.read((char*)&cols, sizeof(unsigned));
 	h = Haul(id, rows, cols);
-	for (unsigned i = 0; i < rows; ++i)
-	{
-		for (unsigned j = 0; j < cols; ++j) {
-			bool taken;
-			is.read((char*)&taken, sizeof(bool));
-			if (taken) h.take_seat(i, j);
-		}
-	}
 	return is;
 }
 
-std::ostream& operator<<(std::ostream& os, const Ticket& t)
+std::ostream& operator<<(std::ostream& os, const Serialize_Watched_Movies& swm)
 {
-	unsigned movie_id = t.Movie()->Id();
-	os.write((const char*)&movie_id, sizeof(unsigned));
-	unsigned row = t.Row(), col = t.Col();
-	os.write((const char*)&row, sizeof(unsigned));
-	os.write((const char*)&col, sizeof(unsigned));
+	unsigned id = swm.Movie_id();
+	os.write((const char*)&id, sizeof(unsigned));
 	return os;
 }
-std::istream& operator>>(std::istream& is, Ticket& t)
+std::istream& operator>>(std::istream& is, Serialize_Watched_Movies& swm)
 {
-	unsigned movieId, row, col;
-	is.read((char*)&movieId, sizeof(unsigned));
-	is.read((char*)&row, sizeof(unsigned));
-	is.read((char*)&col, sizeof(unsigned));
-	t = Ticket(nullptr, row, col);
+	unsigned id;
+	is.read((char*)&id, sizeof(unsigned));
 	return is;
+	swm.set_movie_id(id);
 }
 
 std::ostream& operator<<(std::ostream& os, const Serialize_Ticket& st)
 {
+	std::cout << "Saving: " << st.movie_id << " " << st.row << " " << st.col << std::endl;
 	os.write((const char*)&st.movie_id, sizeof(unsigned));
 	os.write((const char*)&st.row, sizeof(unsigned));
 	os.write((const char*)&st.col, sizeof(unsigned));
@@ -97,64 +103,29 @@ std::istream& operator>>(std::istream& is, Serialize_Rating& sr)
 
 std::ostream& operator<<(std::ostream& os, const Serialize_User& su)
 {
-	os.write((const char*)&su.id, sizeof(unsigned));
-	Help_Program::write(os, su.username);
-	Help_Program::write(os, su.password);
-	os.write((const char*)&su.balance, sizeof(double));
-	os.write((const char*)&su.admin, sizeof(bool));
-
-	unsigned ticket_count = su.tickets_soon.Size();
-	os.write((const char*)&ticket_count, sizeof(unsigned));
-	for (unsigned i = 0; i < ticket_count; i++)
-		os << *su.tickets_soon[i];
-
-	unsigned watched_count = su.watched_movies_id.Size();
-	os.write((const char*)&watched_count, sizeof(unsigned));
-	for (unsigned i = 0; i < watched_count; i++)
-		os.write((const char*)su.watched_movies_id[i], sizeof(unsigned));
-
-	unsigned rated_count = su.rated_movies.Size();
-	os.write((const char*)&rated_count, sizeof(unsigned));
-	for (unsigned i = 0; i < rated_count; i++)
-		os << *su.rated_movies[i];
-
+	os.write((char*)&su.id, sizeof(unsigned));
+	os << su.username;
+	os << su.password;
+	os.write((char*)&su.balance, sizeof(double));
+	os.write((char*)&su.admin, sizeof(bool));
+	os << su.tickets_soon;
+	os << su.watched_movies_id;
+	os << su.rated_movies;
 	return os;
 }
 std::istream& operator>>(std::istream& is, Serialize_User& su)
 {
-	su.free(); 
+	su.free();
 	is.read((char*)&su.id, sizeof(unsigned));
-	su.username = Help_Program::read(is);
-	su.password = Help_Program::read(is);
+	is >> su.username;
+	is >> su.password;
 	is.read((char*)&su.balance, sizeof(double));
 	is.read((char*)&su.admin, sizeof(bool));
-
 	unsigned ticket_count;
 	is.read((char*)&ticket_count, sizeof(unsigned));
-	for (unsigned i = 0; i < ticket_count; i++)
-	{
-		Serialize_Ticket* ts = new Serialize_Ticket();
-		is >> *ts;
-		su.tickets_soon.push(ts);
-	}
-
-	unsigned watched_count;
-	is.read((char*)&watched_count, sizeof(unsigned));
-	for (unsigned i = 0; i < watched_count; i++)
-	{
-		unsigned* m = new unsigned();
-		is.read((char*)m, sizeof(unsigned));
-		su.watched_movies_id.push(m);
-	}
-
-	unsigned rated_count;
-	is.read((char*)&rated_count, sizeof(unsigned));
-	for (unsigned i = 0; i < rated_count; i++)
-	{
-		Serialize_Rating* sr = new Serialize_Rating();
-		is >> *sr;
-		su.rated_movies.push(sr);
-	}
+	is >> su.tickets_soon;
+	is >> su.watched_movies_id;
+	is >> su.rated_movies;
 	return is;
 }
 
@@ -166,7 +137,7 @@ std::ostream& operator<<(std::ostream& os, const Id_Counter& id_counter)
 }
 std::istream& operator>>(std::istream& is, Id_Counter& id_counter)
 {
-	id_counter.free(); 
+	id_counter.free();
 	id_counter.name = Help_Program::read(is);
 	is.read((char*)&id_counter.value, sizeof(unsigned));
 	return is;
@@ -193,7 +164,7 @@ std::istream& operator>>(std::istream& is, Vector<T*>& v) {
 	{
 		T* obj = new T();
 		is >> *obj;
-		vec.push_back(obj);
+		v.push(obj);
 	}
 	return is;
 }
@@ -203,7 +174,7 @@ std::ostream& operator<<(std::ostream& os, const Vector<Movie*>& v)
 	unsigned size = v.Size();
 	os.write((const char*)&size, sizeof(unsigned));
 	for (unsigned i = 0; i < size; i++)
-		v[i]->serialize(os);  
+		v[i]->serialize(os);
 	return os;
 }
 

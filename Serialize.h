@@ -7,15 +7,20 @@
 #include "Documentary.h" 
 #include "Haul.h"    
 #include "Movie_Factory.h"
+#include "Serialize_Watched_Movies.h"  
 #include "Serialize_Ticket.h"  
 #include "Serialize_Rating.h"  
 #include "Serialize_User.h"  
+#include "MyString.h"
+
+std::ostream& operator<<(std::ostream& os, const MyString& str);
+std::istream& operator>>(std::istream& is, MyString& str);
 
 std::ostream& operator<<(std::ostream& os, const Haul& h);
 std::istream& operator>>(std::istream& is, Haul& h);
 
-std::ostream& operator<<(std::ostream& os, const Ticket& t);
-std::istream& operator>>(std::istream& is, Ticket& t);
+std::ostream& operator<<(std::ostream& os, const Serialize_Watched_Movies& swm);
+std::istream& operator>>(std::istream& is, Serialize_Watched_Movies& swm);
 
 std::ostream& operator<<(std::ostream& os, const Serialize_Ticket& st);
 std::istream& operator>>(std::istream& is, Serialize_Ticket& st);

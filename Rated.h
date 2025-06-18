@@ -1,7 +1,7 @@
 #pragma once
 #include "Movie.h"
 
-class Rated 
+class Rated
 {
     Movie* movie;
     unsigned rate;
@@ -14,5 +14,5 @@ public:
     Rated* clone() const;
 
     Movie* get_movie() const;
-    unsigned get_rate() const;
+    unsigned Rate() const;
 };

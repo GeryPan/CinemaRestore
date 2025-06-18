@@ -1,11 +1,12 @@
 #pragma once
 #include "Command.h" 
 #include "Id_Counter_Manager.h"
+#include "MyString.h"
 
 class Register : public Command
 {
 public:
-	const char* Name() const override;
+	const MyString Name() const override;
 	bool need_admin() const override;
 	bool need_login() const override;
 	void execute(std::stringstream& args, User*& user, Cinema& cinema,

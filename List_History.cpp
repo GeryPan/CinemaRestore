@@ -1,21 +1,23 @@
 #include "List_History.h"
 #include "User.h"
+#include "Id_Counter_Manager.h"
+#include "MyString.h"
 #include <iostream>
 #include <stdexcept>
 
-const char* Name()
+const MyString List_History::Name() const
 {
 	return "list-history";
 }
-bool need_login()
+bool List_History::need_login() const
 {
 	return true;
 }
-bool need_admin()
+bool List_History::need_admin() const
 {
 	return false;
 }
-void execute(std::stringstream& args, User*& user, Cinema& cinema,
+void List_History::execute(std::stringstream& args, User*& user, Cinema& cinema,
 	Vector<User*>& users, Id_Counter_Manager& id_manager)
 {
 	Vector<Movie*>& watched = user->Watched_movies();
@@ -23,4 +25,8 @@ void execute(std::stringstream& args, User*& user, Cinema& cinema,
 		throw std::runtime_error("No watched movies found.");
 	for (unsigned i = 0; i < watched.Size(); i++)
 		watched[i]->print();
+}
+Command* List_History::clone() const
+{
+	return new List_History();
 }

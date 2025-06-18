@@ -4,30 +4,31 @@
 #include "Help_Program.h"
 #include <fstream>
 
-static User* serialize_from(const Serialize_User* us, const Cinema& cinema)
+static User* serialize_from(const Serialize_User* su, const Cinema& cinema)
 {
-	User* user = new User(us->id, Help_Program::copy_str(us->username), Help_Program::copy_str(us->password), us->balance, us->admin);
+	User* user = new User(su->id, su->username, su->password, su->balance, su->admin);
 
-	for (unsigned i = 0; i < us->tickets_soon.Size(); i++)
+	for (unsigned i = 0; i < su->tickets_soon.Size(); i++)
 	{
-		const Serialize_Ticket* t = us->tickets_soon[i];
+		const Serialize_Ticket* t = su->tickets_soon[i];
 		Movie* m = cinema.find_movie_by_id(t->movie_id);
 		if (!m)
 			throw std::runtime_error("Invalid movie_id in Ticket.");
-		user->add_ticket(new Ticket(m, t->row, t->col));
+		user->add_ticket(new Ticket(m->Id(), t->row, t->col));
 	}
-	for (unsigned i = 0; i < us->watched_movies_id.Size(); i++)
+	for (unsigned i = 0; i < su->watched_movies_id.Size(); i++)
 	{
-		unsigned mid = *us->watched_movies_id[i];
+		unsigned mid = su->watched_movies_id[i]->Movie_id();
 		Movie* m = cinema.find_movie_by_id(mid);
 		if (!m) throw std::runtime_error("Invalid movieId in watched list.");
 		user->add_watched_movie(m);
 	}
-	for (unsigned i = 0; i < us->rated_movies.Size(); i++)
+	for (unsigned i = 0; i < su->rated_movies.Size(); i++)
 	{
-		const Serialize_Rating* r = us->rated_movies[i];
+		const Serialize_Rating* r = su->rated_movies[i];
 		Movie* m = cinema.find_movie_by_id(r->movie_id);
-		if (!m) throw std::runtime_error("Invalid movieId in rating.");
+		if (!m) 
+		throw std::runtime_error("Invalid movieId in rating.");
 		user->rate_movie(m, r->rating);
 	}
 
@@ -52,13 +53,15 @@ static Vector<User*> serialize_vector_from(const Vector<Serialize_User*>& input,
 
 namespace File
 {
-	void write_in_file(const Cinema& cinema, const Vector<User*>& users, Id_Counter_Manager& id_manager, const char* file_name)
+	void write_in_file(const Cinema& cinema, const Vector<User*>& users, Id_Counter_Manager& id_manager, const MyString& file_name)
 	{
-		std::ofstream file(file_name, std::ios::binary | std::ios::trunc);
-		if (!file) throw std::runtime_error("Failed to create file for writing.");
+		std::ofstream file(file_name.c_str(), std::ios::binary | std::ios::trunc);
+		if (!file) 
+			throw std::runtime_error("Failed to create file for writing.");
 		file.close();
-		std::ofstream ofs(file_name, std::ios::binary);
-		if (!ofs) throw std::runtime_error("Failed to open file for writing.");
+		std::ofstream ofs(file_name.c_str(), std::ios::binary);
+		if (!ofs) 
+			throw std::runtime_error("Failed to open file for writing.");
 		ofs << id_manager.Source();
 		ofs << cinema.Hauls();
 		ofs << cinema.Movies();
@@ -67,10 +70,10 @@ namespace File
 		ofs.close();
 	}
 
-	void read_in_file(Cinema& cinema, Vector<User*>& users, Id_Counter_Manager& id_manager, const char* file_name)
+	Cinema read_in_file(Cinema& cinema, Vector<User*>& users, Id_Counter_Manager& id_manager, const MyString& file_name)
 	{
-		std::ifstream ifs(file_name, std::ios::binary);
-		if (!ifs) return;
+		std::ifstream ifs(file_name.c_str(), std::ios::binary);
+		if (!ifs) return Cinema();
 		Vector<Id_Counter*> ids;
 		ifs >> ids;
 		id_manager.set_source(ids);
@@ -78,9 +81,10 @@ namespace File
 		Vector<Movie*> movies;
 		ifs >> hauls;
 		ifs >> movies;
-		cinema = Cinema(movies, hauls);
+		cinema = Cinema(std::move(movies), std::move(hauls));
 		Vector<Serialize_User*> serials;
 		ifs >> serials;
 		users = serialize_vector_from(serials, cinema);
+		return cinema;
 	}
 }

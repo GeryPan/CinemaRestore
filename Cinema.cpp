@@ -2,9 +2,20 @@
 #include "Constants.h"
 #include "Help_Program.h"
 #include "Movie_Factory.h"
+#include "Vector.hpp"
 #include <iostream>
 #include <cstring>  
 
+void Cinema::free()
+{
+}
+
+void Cinema::copyFrom(const Cinema& other) {
+	movies = other.movies;
+	hauls = other.hauls;
+}
+
+Cinema::Cinema() {}
 Cinema::Cinema(const Cinema& other)
 {
 	copyFrom(other);
@@ -16,12 +27,26 @@ Cinema::Cinema(Vector<Movie*>& new_movies, Vector<Haul*>& new_hauls)
 	hauls = new_hauls;
 }
 
+Cinema::Cinema(Vector<Movie*>&& m, Vector<Haul*>&& h)
+{
+	movies = std::move(m);
+	hauls = std::move(h);
+}
+
 Cinema& Cinema::operator=(const Cinema& other)
 {
-	if (this != &other) 
+	if (this != &other)
 	{
 		free();
 		copyFrom(other);
+	}
+	return *this;
+}
+
+Cinema& Cinema::operator=(Cinema&& other) {
+	if (this != &other) {
+		movies = std::move(other.movies);
+		hauls = std::move(other.hauls);
 	}
 	return *this;
 }
@@ -37,7 +62,7 @@ const Vector<Haul*>& Cinema::Hauls() const
 }
 void Cinema::add_haul(Haul* new_haul)
 {
-	if (find_haul_by_id(new_haul->Id()) != nullptr) 
+	if (find_haul_by_id(new_haul->Id()) != nullptr)
 	{
 		delete new_haul;
 		throw std::runtime_error("This haul already exists.");
@@ -45,7 +70,7 @@ void Cinema::add_haul(Haul* new_haul)
 	hauls.push(new_haul);
 }
 
-bool Cinema::is_haul_available(unsigned haul_id, const char* date, const char* start, const char* finish, const Movie* ignore)
+bool Cinema::is_haul_available(unsigned haul_id, const MyString& date, const MyString& start, const MyString& finish, const Movie* ignore)
 {
 	Haul* h = find_haul_by_id(haul_id);
 	if (!h) return false;
@@ -53,7 +78,7 @@ bool Cinema::is_haul_available(unsigned haul_id, const char* date, const char* s
 	{
 		Movie* m = movies[i];
 		if (m == ignore) continue;
-		if (m->Haul_id() == haul_id && strcmp(m->Date(), date) == 0) {
+		if (m->Haul_id() == haul_id && Help_Program::compare_strings(m->Date(), date) == 0) {
 			if (Help_Program::coincident_time(m->Start(), m->Finish(), start, finish))
 				return false;
 		}
@@ -106,7 +131,7 @@ void Cinema::add_movie(Movie* new_movie)
 }
 Movie* Cinema::find_movie_by_id(unsigned movie_id) const
 {
-	for (unsigned i = 0; i < movies.Size(); i++) 
+	for (unsigned i = 0; i < movies.Size(); i++)
 	{
 		if (movies[i]->Id() == movie_id)
 			return movies[i];
@@ -118,7 +143,7 @@ void Cinema::remove_movie_by_id(unsigned movie_id)
 {
 	for (unsigned i = 0; i < movies.Size(); i++)
 	{
-		if (movies[i]->Id() == movie_id) 
+		if (movies[i]->Id() == movie_id)
 		{
 			movies.remove_at(i);
 			return;
@@ -129,10 +154,8 @@ void Cinema::remove_movie_by_id(unsigned movie_id)
 
 void Cinema::update_movie_haul(Movie* new_movie, unsigned new_haul_id)
 {
-	const char* today = Help_Program::current_time();
+	MyString today = Help_Program::getCurrentDateStr();
 	bool passed = Help_Program::is_before(new_movie->Date(), today);
-	delete[] today;
-
 	if (passed) {
 		throw std::runtime_error("Movie has already been played. Cannot update haul.");
 	}
@@ -148,39 +171,29 @@ void Cinema::update_movie_haul(Movie* new_movie, unsigned new_haul_id)
 void Cinema::close_haul(unsigned haul_id, Vector<User*>& users)
 {
 	Haul* haul = find_haul_by_id(haul_id);
-
 	if (!haul) {
 		throw new std::runtime_error("Haul not found.");
 	}
+	MyString today = Help_Program::getCurrentDateStr();
 
-	const char* today = Help_Program::current_time();
-
-	for (unsigned i = 0; i < movies.Size(); i++) 
+	for (unsigned i = 0; i < movies.Size(); i++)
 	{
 		Movie* m = movies[i];
 		if (m->Haul_id() != haul_id)
 			continue;
 		bool hasPassed = Help_Program::is_before(m->Date(), today);
-		if (hasPassed) 
+		if (hasPassed)
 			m->set_haul_id(Constants::UNKNOWN_HAUL_ID);
-		else {
+		else 
+		{
 			for (unsigned j = 0; j < users.Size(); j++)
-				users[j]->remove_movie(m->Id(), false);
+			{
+				users[j]->remove_movie(m, false);
+			}
 			remove_movie_by_id(m->Id());
 		}
 	}
-	delete[] today;
 	remove_movie_by_id(haul_id);
-}
-
-void Cinema::print_haul(unsigned haul_id) const
-{
-	Haul* h = find_haul_by_id(haul_id);
-	if (h == nullptr) 
-	{
-		throw new std::runtime_error("Haul does not found.");
-	}
-	h->print();
 }
 
 void Cinema::print_movies() const

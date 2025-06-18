@@ -1,5 +1,7 @@
 #pragma once
+#include "User_Input.h"
 #include "Help_Program.h"
+#include "MyString.h"
 #include <iostream>
 #include <string>
 #include <stdexcept>
@@ -10,183 +12,196 @@
 
 namespace User_Input
 {
-    unsigned enter_unsigned(const char* enter, unsigned min = std::numeric_limits<unsigned>::min(), unsigned max = std::numeric_limits<unsigned>::max())
+    unsigned enter_unsigned(const MyString& enter, unsigned min, unsigned max)
     {
         unsigned value;
-        while (true)
-        {
-            std::cout << enter;
+        while (true) {
+            std::cout << enter.c_str();
             std::cin >> value;
-            if (!std::cin.fail() && value >= min && value <= max)
+            if (!std::cin.fail() && value >= min && value <= max) 
             {
                 User_Input::skip_line();
                 return value;
             }
-            std::cout << "Invalid input. ";
+            std::cout << "Invalid input. " << std::endl;
             std::cin.clear();
             User_Input::skip_line();
         }
-        throw std::invalid_argument("Invalid unsigned input.");
+        throw std::invalid_argument("Invalid int input.");
     }
 
-    float enter_float(const char* enter, float min = -std::numeric_limits<float>::max(), float max = std::numeric_limits<float>::max())
+    float enter_float(const MyString& enter, float min, float max)
     {
         float value;
-        while (true)
-        {
-            std::cout << enter;
+        while (true) {
+            std::cout << enter.c_str();
             std::cin >> value;
-            if (!std::cin.fail() && value >= min && value <= max)
-            {
+            if (!std::cin.fail() && value >= min && value <= max) {
                 User_Input::skip_line();
                 return value;
             }
-
-            std::cout << "Invalid input. ";
+            std::cout << "Invalid input. " << std::endl;
             std::cin.clear();
             User_Input::skip_line();
         }
+
         throw std::invalid_argument("Invalid float input.");
     }
 
-    bool enter_bool(const char* enter)
+    bool enter_bool(const MyString& enter)
     {
         std::string input;
-        while (true)
-        {
-            std::cout << enter << " true/false: ";
+        while (true) {
+            std::cout << enter.c_str() << " (true/false): ";
             std::getline(std::cin, input);
+
             for (char& c : input)
                 c = std::tolower(c);
-            if (input == "true" || input == "1")
-                return true;
-            if (input == "false" || input == "0")
-                return false;
-            std::cout << "Invalid input.\n";
+
+            if (input == "true" || input == "1") return true;
+            if (input == "false" || input == "0") return false;
+
+            std::cout << "Invalid input." << std::endl;
         }
+
         throw std::invalid_argument("Invalid boolean input.");
     }
 
-    const char* enter_text(const char* enter, unsigned max_length)
+    MyString enter_text(const MyString& enter, unsigned max_length)
     {
-        static std::string buffer;
-        while (true)
+        std::string buffer;
+        while (true) 
         {
-            std::cout << enter;
+            std::cout << enter.c_str();
             std::getline(std::cin, buffer);
+
             size_t start = buffer.find_first_not_of(" \t");
-            size_t finish = buffer.find_last_not_of(" \t");
-            if (start != std::string::npos && finish != std::string::npos)
-                buffer = buffer.substr(start, finish - start + 1);
+            size_t end = buffer.find_last_not_of(" \t");
+
+            if (start != std::string::npos && end != std::string::npos)
+                buffer = buffer.substr(start, end - start + 1);
             else
                 buffer.clear();
 
-            if (buffer.empty())
-            {
-                std::cout << "Input cannot be empty.\n";
+            if (buffer.empty()) {
+                std::cout << "Input cannot be empty." << std::endl;
                 continue;
             }
 
-            if ((int)buffer.length() >= max_length)
-            {
+            if ((int)buffer.length() >= max_length) {
                 std::cout << "Input too long. Maximum length is " << max_length - 1 << " characters.\n";
                 continue;
             }
-
-            return buffer.c_str();
+            return MyString(buffer.c_str());
         }
-        throw std::invalid_argument("Invalid text input.");
     }
 
-    const char* enter_date(const char* enter)
+    MyString enter_date(const MyString& enter, const MyString& after, const MyString& before)
     {
-        static std::string buffer;
-        while (true) {
-            std::cout << enter;
+        std::string buffer;
+
+        while (true) 
+        {
+            std::cout << enter.c_str();
             std::getline(std::cin, buffer);
 
-            if (buffer.length() != 10 || buffer[4] != '-' || buffer[7] != '-')
+            if (buffer.length() != 10 || buffer[4] != '-' || buffer[7] != '-') 
             {
-                std::cout << "Invalid date format. Use YYYY-MM-DD.\n";
+                std::cout << "Invalid date format. Use YYYY-MM-DD." << std::endl;
                 continue;
             }
-
             bool valid = true;
-            for (unsigned i = 0; i < 10; i++)
+            for (int i = 0; i < 10; i++)
             {
-                if (i == 4 || i == 7)
-                    continue;
-                if (buffer[i] > '9' || buffer[i] < '0')
+                if (i == 4 || i == 7) continue;
+                if (buffer[i]>'9' || buffer[i]<'0') 
                 {
                     valid = false;
                     break;
                 }
             }
-
-            if (valid == false)
+            if (!valid) 
             {
-                std::cout << "Invalid date format. Use YYYY-MM-DD.\n";
+                std::cout << "Invalid date format. Use YYYY-MM-DD." << std::endl;
                 continue;
             }
-
             unsigned year = std::stoi(buffer.substr(0, 4));
             unsigned month = std::stoi(buffer.substr(5, 2));
             unsigned day = std::stoi(buffer.substr(8, 2));
-
-            if (month < 1 || month > 12)
-            {
-                std::cout << "Invalid month. Use value between 01 and 12.\n";
+             if (month < 1 || month > 12) 
+             {
+                std::cout << "Invalid month. Use value between 01 and 12." << std::endl;
                 continue;
             }
 
-            unsigned daysInMonth[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+             unsigned daysInMonth[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
             bool isLeapYear = (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0));
             if (isLeapYear && month == 2) daysInMonth[1] = 29;
-
-            if (day < 1 || day > daysInMonth[month - 1]) {
-                std::cout << "Invalid day for given month.\n";
+            if (day < 1 || day > daysInMonth[month - 1]) 
+            {
+                std::cout << "Invalid day for given month." << std::endl;
                 continue;
             }
-
-            return buffer.c_str();
+             MyString input(buffer.c_str());
+            if (after.length() > 0 && Help_Program::is_before(input, after)) 
+            {
+                std::cout << "Date must be after or equal to " << after.c_str() << "." << std::endl;
+                continue;
+            }
+            if (before.length() > 0 && Help_Program::is_before(before, input)) 
+            {
+                std::cout << "Date must be before or equal to " << before.c_str() << "." << std::endl;
+                continue;
+            }
+            return input;
         }
-
-        throw std::invalid_argument("Invalid date input."); // unreachable but required
     }
-
-    const char* enter_time(const char* enter)
+    MyString enter_time(const MyString& enter, const MyString& after, const MyString& before)
     {
-        static std::string buffer;
+        std::string buffer;
         while (true)
         {
-            std::cout << enter;
+            std::cout << enter.c_str();
             std::getline(std::cin, buffer);
-            if (Help_Program::is_valid(buffer.c_str()))
-                return buffer.c_str();
-            std::cout << "Invalid time format. Use HH:MM.\n";
+            MyString input(buffer.c_str());
+            if (!Help_Program::is_valid(input))
+            {
+                std::cout << "Invalid time format. Use HH:MM (24h)." << std::endl;
+                continue;
+            }
+            if (after.length() > 0 && Help_Program::compare_strings(input, after) < 0)
+            {
+                std::cout << "Time must be after or equal to " << after.c_str() << ".\n";
+                continue;
+            }
+            if (before.length() > 0 && Help_Program::compare_strings(input, before) > 0)
+            {
+                std::cout << "Time must be before or equal to " << before.c_str() << ".\n";
+                continue;
+            }
+            return input;
         }
+        throw std::invalid_argument("Invalid time.");
     }
-    char* get_remaining(std::stringstream& ss, unsigned max_length) {
-        std::string str;
-        std::getline(ss, str);
-        size_t first_char = str.find_first_not_of(" \t");
-        if (first_char != std::string::npos)
-            str = str.substr(first_char);
-        else
-            str.clear();
-        if (str.empty()) {
-            throw std::invalid_argument("No input provided.");
+        MyString get_remaining(std::stringstream& ss, unsigned max_length)
+        {
+            std::string str;
+            std::getline(ss, str);
+            size_t first_char = str.find_first_not_of(" \t");
+            if (first_char != std::string::npos)
+                str = str.substr(first_char);
+            else
+                str.clear();
+            if (str.empty()) {
+                throw std::invalid_argument("No input provided.");
+            }
+            if ((int)str.length() >= max_length)
+                throw std::invalid_argument("Remaining input too long.");
+
+            return MyString(str.c_str());
         }
-        if ((int)str.length() >= max_length)
-            throw std::invalid_argument("Remaining input too long.");
 
-        char* result = new char[str.length() + 1];
-        std::copy(str.begin(), str.end(), result);
-        result[str.length()] = '\0';
-        return result;
-    }
-
-    unsigned get_unsigned(std::stringstream& ss, unsigned min = std::numeric_limits<unsigned>::min(), unsigned max = std::numeric_limits<unsigned>::max())
+    unsigned get_unsigned(std::stringstream& ss, unsigned min, unsigned max)
     {
         std::string take;
         if (!(ss >> take)) throw std::invalid_argument("Missing int argument.");
@@ -200,12 +215,12 @@ namespace User_Input
         throw std::invalid_argument("Invalid int argument.");
     }
 
-    float get_float(std::stringstream& ss, float min = -std::numeric_limits<float>::max(), float max = std::numeric_limits<float>::max())
+    float get_float(std::stringstream& ss, float min, float max)
     {
         std::string token;
-        if (!(ss >> token)) throw std::invalid_argument("Missing float argument.");
-
-        try {
+        if (!(ss >> token)) 
+            throw std::invalid_argument("Missing float argument.");
+  try {
             float val = std::stof(token);
             if (val >= min && val <= max) return val;
         }
@@ -227,12 +242,12 @@ namespace User_Input
         throw std::invalid_argument("Invalid boolean argument.");
     }
 
-    const char* get_word(std::stringstream& ss, int max_length)
+    MyString get_word(std::stringstream& ss, unsigned max_length)
     {
-        static std::string buffer;
-        if (!(ss >> buffer) || buffer.length() >= (size_t)max_length)
+        std::string buffer;
+        if (!(ss >> buffer) || buffer.length() >= max_length)
             throw std::invalid_argument("Missing or too long word argument.");
-        return buffer.c_str();
+        return MyString(buffer.c_str());
     }
 
     void skip_line()

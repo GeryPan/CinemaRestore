@@ -1,4 +1,5 @@
 #include "Command_Handler.h"
+#include "Help_Program.h"
 #include "Register.h"
 #include "Login.h"
 #include "Logout.h"
@@ -31,16 +32,16 @@ void Command_Handler::copyFrom(const Command_Handler& other)
     commands = other.commands;
 }
 
-Command_Handler::Command_Handler()
+Command_Handler::Command_Handler()  
 {
-    user = nullptr;
+    user = nullptr; 
     register_command(new Register());
     register_command(new Login());
     register_command(new Buy_Ticket());
     register_command(new List_History());
     register_command(new List_Movies());
-    register_command(new List_Tickets());
-    register_command(new Rated());
+    register_command(new List_Ticket());
+    register_command(new Rate_Command());
     register_command(new Logout());
     register_command(new Exit_Command());
 
@@ -55,51 +56,51 @@ Command_Handler::Command_Handler()
     register_command(new List_Users());
     register_command(new Remove_User());
 
-    File::read_in_file(cinema, users, id_manager, "cinema_data.bin");
+    cinema = File::read_in_file(cinema, users, id_manager, "cinema_data.bin");
 }
 Command_Handler::Command_Handler(const Command_Handler& other)
 {
     copyFrom(other);
 }
 
-    Command_Handler& Command_Handler::operator=(const Command_Handler& other)
-    {
-        if (this != &other) {
-            free();
-            copyFrom(other);
-        }
-        return *this;
-    }
-
-    void Command_Handler::handle(const std::string& line)
-    {
-        std::stringstream str(line);
-        std::string cmd;
-        str >> cmd;
-        Command* matched = nullptr;
-
-        for (unsigned i = 0; i < commands.Size(); i++)
-        {
-            if (strcmp(commands[i]->Name(), cmd.c_str()) == 0) 
-            {
-                matched = commands[i];
-                break;
-            }
-        }
-        if (!matched) 
-            throw std::runtime_error("Don't have this command.");
-        if (matched->need_login() && user == nullptr) 
-            throw std::runtime_error("You must be logged in.");
-        if (matched->need_admin() && (!user || !user->is_admin())) 
-            throw std::runtime_error("You must be an administrator.");
-       matched->execute(str, user, cinema, users, id_manager);
-    }
-    void Command_Handler::register_command(Command* command)
-    {
-        commands.push(command);
-    }
-
-    Command_Handler::~Command_Handler()
-    {
+Command_Handler& Command_Handler::operator=(const Command_Handler& other)
+{
+    if (this != &other) {
         free();
+        copyFrom(other);
     }
+    return *this;
+}
+
+void Command_Handler::handle(const MyString& line)
+{
+    std::stringstream str(line.c_str());
+    std::string cmd;
+    str >> cmd;
+    Command* matched = nullptr;
+
+    for (unsigned i = 0; i < commands.Size(); i++)
+    {
+        if (Help_Program::compare_strings(commands[i]->Name(), cmd.c_str()) == 0)
+        {
+            matched = commands[i];
+            break;
+        }
+    }
+    if (!matched)
+        throw std::runtime_error("Don't have this command.");
+    if (matched->need_login() && user == nullptr)
+        throw std::runtime_error("You must be logged in.");
+    if (matched->need_admin() && (!user || !user->is_admin()))
+        throw std::runtime_error("You must be an administrator.");
+    matched->execute(str, user, cinema, users, id_manager);
+}
+void Command_Handler::register_command(Command* command)
+{
+    commands.push(command);
+}
+
+Command_Handler::~Command_Handler()
+{
+    free();
+}

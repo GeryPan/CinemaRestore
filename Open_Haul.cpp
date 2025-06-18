@@ -5,24 +5,28 @@
 #include <iostream>
 #include <stdexcept>
 
-const char* Name() 
+const MyString Open_Haul::Name() const
 {
-    return "open-haul"; 
+    return "open-haul";
 }
-bool need_login() 
-{ 
-    return true; 
+bool Open_Haul::need_login() const
+{
+    return true;
 }
-bool need_admin() 
-{ 
-    return true; 
+bool Open_Haul::need_admin() const
+{
+    return true;
 }
 
-void execute(std::stringstream& args, User*& user, Cinema& cinema,
-    Vector<User*>& users, Id_Counter_Manager& id_manager) 
+void Open_Haul::execute(std::stringstream& args, User*& user, Cinema& cinema,
+    Vector<User*>& users, Id_Counter_Manager& id_manager)
 {
     unsigned rows = User_Input::get_unsigned(args, 1, Constants::MAX_HAUL_ROW_COUNT);
     unsigned cols = User_Input::get_unsigned(args, 1, Constants::MAX_HAUL_COL_COUNT);
     unsigned new_haul_id = id_manager.generate_next_id("haul");
     cinema.add_haul(new Haul(new_haul_id, rows, cols));
+}
+Command* Open_Haul::clone() const
+{
+    return new Open_Haul();
 }

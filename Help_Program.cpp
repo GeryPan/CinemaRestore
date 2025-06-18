@@ -1,97 +1,118 @@
 #include "Help_Program.h"
-#include <iostream>
 #include <ctime>
 #include <cstring>
+#include <iostream>
+#include <stdexcept>
+#include <cstdio>
 
-char* Help_Program::read(std::istream& is)
+namespace Help_Program 
 {
-	size_t length;
-	is.read((char*)&length, sizeof(size_t));
-	if (length < 0) 
-		throw std::length_error("Invalid string length!");
 
-	char* str = new char[length + 1];
-	is.read(str, length);
-	if (!is) {
-		delete[] str;
-		throw std::runtime_error("Can not read string contents!");
-	}
-
-	str[length] = '\0';
-
-	return str;
-}
-
-void Help_Program::write(std::ostream& os, const char* str)
-{
-	size_t length;
-	if (!str) {
-		length = 0;
-		os.write((char*)&length, sizeof(size_t));
-		return;
-	}
-	length = strlen(str);
-	os.write((char*)&length, sizeof(size_t));
-	os.write(str, length);
-}
-
-unsigned Help_Program::convert_to_minutes(const char* time)
-{
-	unsigned hours = (time[0] - '0') * 10 + (time[1] - '0');
-	unsigned minutes = (time[3] - '0') * 10 + (time[4] - '0');
-	return hours * 60 + minutes;
-}
-
-bool Help_Program::coincident_time(const char* start_1, const char* start_2, const char* finish_1, const char* finish_2)
-{
-	int s_1 = convert_to_minutes(start_1);
-	int f_1 = convert_to_minutes(finish_1);
-	int s_2 = convert_to_minutes(start_2);
-	int f_2 = convert_to_minutes(finish_2);
-	return s_1 < f_2 && s_2 < f_1;
-}
-
-bool Help_Program::is_valid(const char* time)
-{
-	if (strlen(time) != 5 || time[2] != ':')
-		return false;
-
-	for (unsigned i = 0; i < 5; i++)
+	unsigned convert_to_minutes(const MyString& str) 
 	{
-		if (i == 2) continue;
-		if (time[i] < '0' || time[i] > '9')
+		unsigned hours = (str[0] - '0') * 10 + (str[1] - '0');
+		unsigned minutes = (str[3] - '0') * 10 + (str[4] - '0');
+		return hours * 60 + minutes;
+	}
+
+	MyString minutes_to_str(unsigned totalMinutes)
+	{
+		if (totalMinutes < 0 || totalMinutes >= 24 * 60)
+			throw std::out_of_range("Minutes exceed 24-hour range.");
+
+		char buffer[6]; // HH:MM + \0
+		std::snprintf(buffer, sizeof(buffer), "%02d:%02d", totalMinutes / 60, totalMinutes % 60);
+		return MyString(buffer);
+	}
+
+	bool coincident_time(const MyString& start1, const MyString& end1,
+		const MyString& start2, const MyString& end2) {
+		unsigned s1 = convert_to_minutes(start1);
+		unsigned e1 = convert_to_minutes(end1);
+		unsigned s2 = convert_to_minutes(start2);
+		unsigned e2 = convert_to_minutes(end2);
+		return s1 < e2&& s2 < e1;
+	}
+
+	bool is_valid(const MyString& str) {
+		if (str.length() != 5 || str[2] != ':')
 			return false;
+
+		for (int i = 0; i < 5; ++i) {
+			if (i == 2) continue;
+			if (str[i] > '9' || str[i] < '0')
+				return false;
+		}
+
+		int hours = (str[0] - '0') * 10 + (str[1] - '0');
+		int minutes = (str[3] - '0') * 10 + (str[4] - '0');
+
+		return hours >= 0 && hours < 24 && minutes >= 0 && minutes < 60;
 	}
 
-	unsigned hours = (time[0] - '0') * 10 + (time[1] - '0');
-	unsigned minutes = (time[3] - '0') * 10 + (time[4] - '0');
+	MyString add_time(const MyString& timeStr, int minutesToAdd) {
+		int totalMinutes = convert_to_minutes(timeStr) + minutesToAdd;
+		return minutes_to_str(totalMinutes);
+	}
 
-	return hours >= 0 && hours < 24 && minutes >= 0 && minutes < 60;
-}
+	MyString remove_time(const MyString& timeStr, int minutesToRemove) {
+		return add_time(timeStr, -minutesToRemove);
+	}
 
-bool Help_Program::is_before(const char* date_1, const char* date_2)
-{
-	return strcmp(date_1, date_2) < 0;
-}
-char* Help_Program::current_time()
-{
-	time_t now = time(nullptr);
-	tm local;
-	localtime_s(&local, &now);
-	char* buffer = new char[11]; 
-	strftime(buffer, 11, "%Y-%m-%d", &local);
-	return buffer;
-}
+	bool is_before(const MyString& date1, const MyString& date2) {
+		return compare_strings(date1, date2) < 0;
+	}
 
-char* Help_Program::copy_str(const char* str)
-{
-	if (!str) return nullptr;
-	size_t length = strlen(str);
-	char* new_str = new char[length + 1];
-	for (size_t i = 0; i < length; i++)
+	MyString copy_str(const MyString& source) {
+		return MyString(source);
+	}
+
+	MyString getCurrentDateStr() {
+		time_t now = time(nullptr);
+		tm local;
+		localtime_s(&local, &now);
+
+		char buffer[11]; // YYYY-MM-DD + \0
+		std::strftime(buffer, sizeof(buffer), "%Y-%m-%d", &local);
+		return MyString(buffer);
+		//return "2027-06-17";
+	}
+
+	MyString getCurrentTimeStr() {
+		time_t now = time(nullptr);
+		tm local;
+		localtime_s(&local, &now);
+
+		char buffer[6]; // HH:MM + \0
+		std::strftime(buffer, sizeof(buffer), "%H:%M", &local);
+		return MyString(buffer);
+	}
+
+	void writeString(std::ostream& out, const MyString& str) {
+		int len = str.length();
+		out.write((char*)&len, sizeof(int));
+		out.write(str.c_str(), len);
+	}
+
+	MyString read(std::istream& in) 
 	{
-		new_str[i] = str[i];
+		int len;
+		in.read((char*)&len, sizeof(int));
+		if (!in || len < 0) throw std::runtime_error("Corrupt or invalid string length");
+		char* buffer = new char[len + 1];
+		in.read(buffer, len);
+		if (!in) {
+			delete[] buffer;
+			throw std::runtime_error("Failed to read string contents");
+		}
+		buffer[len] = '\0';
+		MyString result(buffer);
+		delete[] buffer;
+		return result;
 	}
-	new_str[length] = '\0';
-	return new_str;
+
+	unsigned compare_strings(const MyString& str1, const MyString& str2) 
+	{
+		return std::strcmp(str1.c_str(), str2.c_str());
+	}
 }

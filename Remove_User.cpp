@@ -1,27 +1,29 @@
 #include "Remove_User.h"
 #include "User_Input.h"
 #include "Constants.h"
+#include "Id_Counter_Manager.h"
+#include "MyString.h"
 #include <iostream>
 #include <cstring>
-const char* Name()
+const MyString Remove_User::Name() const
 {
     return "remove-user";
 }
-bool need_admin()
+bool Remove_User::need_admin() const
 {
     return true;
 }
-bool need_login()
+bool Remove_User::need_login() const
 {
     return true;
 }
 
-void execute(std::stringstream& args, User*& user, Cinema& cinema,
+void Remove_User::execute(std::stringstream& args, User*& user, Cinema& cinema,
     Vector<User*>& users, Id_Counter_Manager& id_manager)
 {
     unsigned user_id = User_Input::get_unsigned(args, 0, id_manager.peek_current_id("user"));
 
-    for (unsigned i = 0; i < users.Size(); i++) 
+    for (unsigned i = 0; i < users.Size(); i++)
     {
         if (users[i]->Id() == user_id) {
             if (users[i]->is_admin()) {
@@ -37,7 +39,7 @@ void execute(std::stringstream& args, User*& user, Cinema& cinema,
 
     throw std::runtime_error("User not found.");
 }
-Command* clone()
+Command* Remove_User::clone() const
 {
     return new Remove_User();
 }

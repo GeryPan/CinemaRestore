@@ -1,29 +1,32 @@
 #include "List_User_History.h"
+#include "Help_Program.h"
 #include "User_Input.h"
+#include "Id_Counter_Manager.h"
+#include "MyString.h"
 #include "Constants.h"
 #include <iostream>
 #include <cstring>
 
-const char* Name()
+const MyString List_User_History::Name() const
 {
-	return "list-user-history";
+    return "list-user-history";
 }
-bool need_login()
+bool List_User_History::need_login() const
 {
-	return true;
+    return true;
 }
-bool need_admin()
+bool List_User_History::need_admin() const
 {
-	return true;
+    return true;
 }
-void execute(std::stringstream& args, User*& user, Cinema& cinema,
-	Vector<User*>& users, Id_Counter_Manager& id_manager)
+void List_User_History::execute(std::stringstream& args, User*& user, Cinema& cinema,
+    Vector<User*>& users, Id_Counter_Manager& id_manager)
 {
-    const char* username = User_Input::get_word(args, Constants::MAX_USERNAME_LENGTH);
+    MyString username = User_Input::get_word(args, Constants::MAX_USERNAME_LENGTH);
     User* target = nullptr;
     for (unsigned i = 0; i < users.Size(); i++)
     {
-        if (strcmp(users[i]->Username(), username) == 0) {
+        if (Help_Program::compare_strings(users[i]->Username(), username) == 0) {
             target = users[i];
             break;
         }
@@ -41,4 +44,8 @@ void execute(std::stringstream& args, User*& user, Cinema& cinema,
         std::cout << "- ";
         history[i]->print();
     }
+}
+Command* List_User_History::clone() const
+{
+    return new List_User_History();
 }

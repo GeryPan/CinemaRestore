@@ -1,14 +1,16 @@
 #pragma once
 #include "Movie.h"
+#include "MyString.h"
 #include <iostream>
 
-class Drama : public Movie 
+class Drama : public Movie
 {
     bool has_comedy_elements;
     void copyFrom(const Drama& other);
 public:
-    Drama(unsigned new_id, unsigned new_haul_id, const char* new_title, float new_rate, unsigned continuance, const char* new_date, unsigned new_year,
-        const char* new_start, const char* new_finish, bool new_has_comedy_elements);
+    Drama(unsigned new_id, unsigned new_haul_id, const MyString& new_title, float new_rate,
+        unsigned continuance, const MyString& new_date, unsigned new_year,
+        const MyString& new_start, const MyString& new_finish, bool new_has_comedy_elements);
     Drama() = default;
     Drama(const Drama& other);
     Drama& operator=(const Drama& other);
@@ -19,4 +21,4 @@ public:
     void deserialize(std::istream& is) override;
     Drama* clone() const override;
     virtual ~Drama() = default;
-    };
+};

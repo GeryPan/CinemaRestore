@@ -2,12 +2,13 @@
 #include "Command.h" 
 #include "Id_Counter_Manager.h"
 
-class Close_Haul: public Command 
+class Close_Haul : public Command
 {
 public:
-	const char* Name() const override;
+	const MyString Name() const override;
 	bool need_login() const override;
 	bool need_admin() const override;
-void execute(std::stringstream& args, User*& user, Cinema& cinema,
+	void execute(std::stringstream& args, User*& user, Cinema& cinema,
 		Vector<User*>& users, Id_Counter_Manager& id_manager) override;
+	Command* clone() const override;
 };

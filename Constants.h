@@ -1,5 +1,5 @@
 #pragma once
-namespace Constants 
+namespace Constants
 {
 	const unsigned MAX_USERNAME_LENGTH = 128;
 	const unsigned MAX_PASSWORD_LENGTH = 128;

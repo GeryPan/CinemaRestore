@@ -5,3 +5,8 @@ Serialize_Ticket::Serialize_Ticket(unsigned new_movie_d, unsigned new_row, unsig
 	row = new_row;
 	col = new_col;
 }
+
+Serialize_Ticket* Serialize_Ticket::clone() const 
+{
+	return new Serialize_Ticket(*this);
+}

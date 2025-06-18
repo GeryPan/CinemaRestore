@@ -1,21 +1,23 @@
 #include "Remove_Movie.h"
 #include "User_Input.h"
+#include "Id_Counter_Manager.h"
+#include "MyString.h"
 #include <iostream>
 #include <stdexcept>
-const char* Name()
+const MyString Remove_Movie::Name() const
 {
     return "remove-movie";
 }
-bool need_admin()
+bool Remove_Movie::need_admin() const
 {
     return true;
 }
-bool need_login()
+bool Remove_Movie::need_login() const
 {
     return true;
 }
 
-void execute(std::stringstream& args, User*& user, Cinema& cinema,
+void Remove_Movie::execute(std::stringstream& args, User*& user, Cinema& cinema,
     Vector<User*>& users, Id_Counter_Manager& id_manager)
 {
     unsigned movie_id = User_Input::get_unsigned(args);
@@ -25,7 +27,7 @@ void execute(std::stringstream& args, User*& user, Cinema& cinema,
         throw std::runtime_error("Movie not found.");
     cinema.update_movie_haul(movie, new_haul_id);
 }
-Command* clone()
+Command* Remove_Movie::clone() const
 {
     return new Remove_Movie();
 }

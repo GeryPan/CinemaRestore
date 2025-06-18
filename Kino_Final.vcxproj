@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{4930ad55-233d-4a77-beaa-b34253b05717}</ProjectGuid>
+    <RootNamespace>KinoFinal</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Action.cpp" />
+    <ClCompile Include="Add_Movie.cpp" />
+    <ClCompile Include="Buy_Ticket.cpp" />
+    <ClCompile Include="Cinema.cpp" />
+    <ClCompile Include="Close_Haul.cpp" />
+    <ClCompile Include="Command_Handler.cpp" />
+    <ClCompile Include="Documentary.cpp" />
+    <ClCompile Include="Drama.cpp" />
+    <ClCompile Include="Exit_Command.cpp" />
+    <ClCompile Include="File.cpp" />
+    <ClCompile Include="Haul.cpp" />
+    <ClCompile Include="Haul_Help.cpp" />
+    <ClCompile Include="Help_Program.cpp" />
+    <ClCompile Include="Id_Counter.cpp" />
+    <ClCompile Include="Id_Counter_Manager.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="List_History.cpp" />
+    <ClCompile Include="List_Movies.cpp" />
+    <ClCompile Include="List_Tickets.cpp" />
+    <ClCompile Include="List_Users.cpp" />
+    <ClCompile Include="List_User_History.cpp" />
+    <ClCompile Include="List_User_Tickets.cpp" />
+    <ClCompile Include="Login.cpp" />
+    <ClCompile Include="Logout.cpp" />
+    <ClCompile Include="Movie.cpp" />
+    <ClCompile Include="Movie_Factory.cpp" />
+    <ClCompile Include="MyString.cpp" />
+    <ClCompile Include="Open_Haul.cpp" />
+    <ClCompile Include="Rated.cpp" />
+    <ClCompile Include="Rate_Command.cpp" />
+    <ClCompile Include="Register.cpp" />
+    <ClCompile Include="Remove_Movie.cpp" />
+    <ClCompile Include="Remove_User.cpp" />
+    <ClCompile Include="Serialize.cpp" />
+    <ClCompile Include="Serialize_Rating.cpp" />
+    <ClCompile Include="Serialize_Ticket.cpp" />
+    <ClCompile Include="Serialize_User.cpp" />
+    <ClCompile Include="Serialize_Watched_Movies.cpp" />
+    <ClCompile Include="Ticket.cpp" />
+    <ClCompile Include="Update_Movie_Haul.cpp" />
+    <ClCompile Include="Update_Movie_Title.cpp" />
+    <ClCompile Include="User.cpp" />
+    <ClCompile Include="User_Input.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Action.h" />
+    <ClInclude Include="Add_Movie.h" />
+    <ClInclude Include="Buy_Ticket.h" />
+    <ClInclude Include="Cinema.h" />
+    <ClInclude Include="Close_Haul.h" />
+    <ClInclude Include="Command.h" />
+    <ClInclude Include="Command_Handler.h" />
+    <ClInclude Include="Constants.h" />
+    <ClInclude Include="Documentary.h" />
+    <ClInclude Include="Drama.h" />
+    <ClInclude Include="Exit_Command.h" />
+    <ClInclude Include="File.h" />
+    <ClInclude Include="Haul.h" />
+    <ClInclude Include="Haul_Help.h" />
+    <ClInclude Include="Help_Program.h" />
+    <ClInclude Include="Id_Counter.h" />
+    <ClInclude Include="Id_Counter_Manager.h" />
+    <ClInclude Include="List_History.h" />
+    <ClInclude Include="List_Movies.h" />
+    <ClInclude Include="List_Tickets.h" />
+    <ClInclude Include="List_Users.h" />
+    <ClInclude Include="List_User_History.h" />
+    <ClInclude Include="List_User_Tickets.h" />
+    <ClInclude Include="Login.h" />
+    <ClInclude Include="Logout.h" />
+    <ClInclude Include="Movie.h" />
+    <ClInclude Include="Movie_Factory.h" />
+    <ClInclude Include="MyString.h" />
+    <ClInclude Include="Open_Haul.h" />
+    <ClInclude Include="Rated.h" />
+    <ClInclude Include="Rate_Command.h" />
+    <ClInclude Include="Register.h" />
+    <ClInclude Include="Remove_Movie.h" />
+    <ClInclude Include="Remove_User.h" />
+    <ClInclude Include="Serialize.h" />
+    <ClInclude Include="Serialize_Rating.h" />
+    <ClInclude Include="Serialize_Ticket.h" />
+    <ClInclude Include="Serialize_User.h" />
+    <ClInclude Include="Serialize_Watched_Movies.h" />
+    <ClInclude Include="Ticket.h" />
+    <ClInclude Include="Update_Movie_Haul.h" />
+    <ClInclude Include="Update_Movie_Title.h" />
+    <ClInclude Include="User.h" />
+    <ClInclude Include="User_Input.h" />
+    <ClInclude Include="Vector.hpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
